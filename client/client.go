@@ -5,12 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/ledxdeliveryflopp/rich-go/ipc"
 	"gopkg.in/natefinch/npipe.v2"
 	"log"
 	"os"
 	"time"
-
-	"github.com/hugolgst/rich-go/ipc"
 )
 
 // Login sends a handshake in the socket and returns an error or nil
