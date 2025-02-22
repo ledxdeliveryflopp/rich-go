@@ -3,14 +3,13 @@ package ipc
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
 	"net"
 	"os"
 )
 
 var socket net.Conn
 
-// Choose the right directory to the ipc socket and return it
+// GetIpcPath Choose the right directory to the ipc socket and return it
 func GetIpcPath() string {
 	variablesnames := []string{"XDG_RUNTIME_DIR", "TMPDIR", "TMP", "TEMP"}
 
@@ -58,24 +57,23 @@ func Read() string {
 }
 
 // Send opcode and payload to the unix socket
-func Send(opcode int, payload string) string {
+func Send(opcode int, payload string) (string, error) {
 	buf := new(bytes.Buffer)
 
 	err := binary.Write(buf, binary.LittleEndian, int32(opcode))
 	if err != nil {
-		fmt.Println(err)
+		return "", err
 	}
 
 	err = binary.Write(buf, binary.LittleEndian, int32(len(payload)))
 	if err != nil {
-		fmt.Println(err)
+		return "", err
 	}
 
 	buf.Write([]byte(payload))
 	_, err = socket.Write(buf.Bytes())
 	if err != nil {
-		fmt.Println(err)
+		return "", err
 	}
-
-	return Read()
+	return Read(), nil
 }

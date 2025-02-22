@@ -3,48 +3,37 @@ package client
 import (
 	"crypto/rand"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"gopkg.in/natefinch/npipe.v2"
+	"log"
 	"os"
+	"time"
 
 	"github.com/hugolgst/rich-go/ipc"
 )
 
-var logged bool
-
 // Login sends a handshake in the socket and returns an error or nil
-func Login(clientid string) error {
-	if !logged {
-		payload, err := json.Marshal(Handshake{"1", clientid})
-		if err != nil {
-			return err
-		}
-
-		err = ipc.OpenSocket()
-		if err != nil {
-			return err
-		}
-
-		// TODO: Response should be parsed
-		ipc.Send(0, string(payload))
+func Login(clientId string) error {
+	payload, err := json.Marshal(Handshake{"1", clientId})
+	if err != nil {
+		return err
 	}
-	logged = true
+
+	err = ipc.OpenSocket()
+	if err != nil {
+		return err
+	}
+
+	_, err = ipc.Send(0, string(payload))
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
 
-func Logout() {
-	logged = false
-
-	err := ipc.CloseSocket()
-	if err != nil {
-		panic(err)
-	}
-}
-
-func SetActivity(activity Activity) error {
-	if !logged {
-		return nil
-	}
+func SetActivity(clientId string, activity Activity) error {
 
 	payload, err := json.Marshal(Frame{
 		"SET_ACTIVITY",
@@ -59,8 +48,18 @@ func SetActivity(activity Activity) error {
 		return err
 	}
 
-	// TODO: Response should be parsed
-	ipc.Send(1, string(payload))
+	_, err = ipc.Send(1, string(payload))
+	if errors.Is(err, npipe.ErrClosed) {
+		log.Println("pipe closed, try reconnect")
+		time.Sleep(time.Second * 10)
+		err := Login(clientId)
+		if err != nil {
+			return err
+		}
+	}
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
