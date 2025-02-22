@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hugolgst/rich-go/client"
+	"github.com/ledxdeliveryflopp/rich-go/client"
 )
 
 func main() {
@@ -14,7 +14,7 @@ func main() {
 	}
 
 	now := time.Now()
-	err = client.SetActivity(client.Activity{
+	err = client.SetActivity("DISCORD_APP_ID", client.Activity{
 		State:      "Heyy!!!",
 		Details:    "I'm running on rich-go :)",
 		LargeImage: "largeimageid",
