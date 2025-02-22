@@ -5,11 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/hugolgst/rich-go/ipc"
-	"gopkg.in/natefinch/npipe.v2"
 	"log"
 	"os"
+	"syscall"
 	"time"
+
+	"github.com/hugolgst/rich-go/ipc"
 )
 
 // Login sends a handshake in the socket and returns an error or nil
@@ -48,15 +49,14 @@ func SetActivity(clientId string, activity Activity) error {
 	}
 
 	_, err = ipc.Send(1, string(payload))
-	if errors.Is(err, npipe.ErrClosed) {
+	if errors.Is(err, syscall.Errno(232)) {
 		log.Println("pipe closed, try reconnect")
 		time.Sleep(time.Second * 10)
 		err := Login(clientId)
 		if err != nil {
 			return err
 		}
-	}
-	if err != nil {
+	} else if err != nil {
 		return err
 	}
 	return nil
