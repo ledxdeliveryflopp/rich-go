@@ -1,4 +1,4 @@
-module github.com/ledxdeliveryflopp/rich-go
+module github.com/hugolgst/rich-go
 
 go 1.17
 

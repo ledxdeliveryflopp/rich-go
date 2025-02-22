@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/ledxdeliveryflopp/rich-go/ipc"
+	"github.com/hugolgst/rich-go/ipc"
 	"gopkg.in/natefinch/npipe.v2"
 	"log"
 	"os"
