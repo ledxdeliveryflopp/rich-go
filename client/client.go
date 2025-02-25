@@ -33,6 +33,14 @@ func Login(clientId string) error {
 	return nil
 }
 
+func Logout() error {
+	err := ipc.CloseSocket()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func SetActivity(clientId string, activity Activity) error {
 
 	payload, err := json.Marshal(Frame{
